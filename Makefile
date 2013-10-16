@@ -27,6 +27,15 @@ run-test-all: $(TEST_OBJS:.js=.run-silent)
 
 run-test: basic.run pubkey.run random.run
 
+build-my-test:
+	emcc -DHAVE_CONFIG_H -I. -I.. -I./build/include -D_FORTIFY_SOURCE=2 -Qunused-arguments -fstack-protector-all -Wstack-protector -fwrapv -fno-strict-overflow -Wall -Wextra -Wno-unused-parameter -Wformat-security -MT my-test/test.lo -MD -MP -c my-test/test.c  -fPIC -DPIC -o my-test/test.o
+
+my-test: build-my-test
+	$(EMCC) my-test/test.o -o my-test/my-test.js $(LIBS) $(GCRYPT) $(NODE) $(OPTIMISATION)
+
+run-my-test:
+	node my-test/my-test.js --verbose
+
 clean:
 	rm -fr tests/*
 
